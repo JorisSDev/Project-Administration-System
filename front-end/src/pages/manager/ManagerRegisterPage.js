@@ -1,17 +1,32 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const ManagerRegistration = () => {
+const ManagerRegisterPage = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
   const handleRegister = () => {
-    fetch("http://localhost:3000/register", {
+    fetch("/api/register", {
       method: "POST",
       body: JSON.stringify({ email, password }),
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((res) => console.log(res));
+    }).then((res) => {
+      if (res.status >= 400 && res.status < 500) {
+        res.json().then((body) => setError(body.message));
+        return;
+      }
+      if (res.status >= 200 && res.status < 300) {
+        navigate("/manager/home");
+        return;
+      }
+    });
   };
+
   return (
     <div>
       <h2>Manager registration</h2>
@@ -27,6 +42,7 @@ const ManagerRegistration = () => {
         value={password}
         onChange={(event) => setPassword(event.target.value)}
       />
+      <div>{error ? error : ""}</div>
       <div>
         <button onClick={handleRegister}>Register</button>
       </div>
@@ -34,4 +50,4 @@ const ManagerRegistration = () => {
   );
 };
 
-export default ManagerRegistration;
+export default ManagerRegisterPage;
