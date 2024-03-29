@@ -19,7 +19,7 @@ const MemberJoinPage = () => {
       },
     }).then((res) => {
       if (res.status >= 400 && res.status < 500) {
-        setError("Access to group denied");
+        setError("Access to group denied-------------------");
         return;
       }
       if (res.status >= 200 && res.status < 300) {
@@ -38,7 +38,7 @@ const MemberJoinPage = () => {
       },
     }).then((res) => {
       if (res.status === 401) {
-        setError("Access to group denied");
+        setError("Access to group denied------------------");
         return;
       }
       if (res.status >= 400 && res.status < 500) {
