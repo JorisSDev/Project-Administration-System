@@ -35,6 +35,11 @@ const MemberHomePage = () => {
       <div>
         <button onClick={handleLogout}>Logout</button>
       </div>
+      <div>
+        <button onClick={() => navigate("/member/leave-feedback")}>
+          Leave feedback
+        </button>
+      </div>
     </div>
   );
 };

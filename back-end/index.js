@@ -160,14 +160,9 @@ app.get("/group", (req, res) => {
 
 const joinValidationSchema = yup.object().shape({
   nickname: yup.string().min(3).max(50).required(),
-  password: yup
-    .string()
-    .required()
-    .min(8)
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]*$/,
-      "Password must contain at least one upper case letter, one lower case letter, and one digit"
-    ),
+  password: yup.string().required(),
+  encPrivateKey: yup.string().required(),
+  publicKey: yup.string().required(),
 });
 
 app.post("/join", (req, res) => {
@@ -177,7 +172,7 @@ app.post("/join", (req, res) => {
       return;
     }
 
-    const { nickname, password } = req.body;
+    const { nickname, password, encPrivateKey, publicKey } = req.body;
 
     joinValidationSchema
       .validate(req.body)
@@ -194,6 +189,8 @@ app.post("/join", (req, res) => {
               nickname,
               password,
               token,
+              encPrivateKey,
+              publicKey,
             },
             () => {
               existingGroup.members.push(nickname);

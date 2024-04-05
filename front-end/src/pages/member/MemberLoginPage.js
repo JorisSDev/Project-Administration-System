@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import md5 from "md5";
 
 const MemberLoginPage = () => {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ const MemberLoginPage = () => {
   const handleRegister = () => {
     fetch("/api/login", {
       method: "POST",
-      body: JSON.stringify({ nickname, password }),
+      body: JSON.stringify({ nickname, password: md5(password) }),
       headers: {
         "Content-Type": "application/json",
       },

@@ -9,6 +9,7 @@ import ManagerCreateGroupPage from "./pages/manager/ManagerCreateGroupPage";
 import MemberJoinPage from "./pages/member/MemberJoinPage";
 import MemberLoginPage from "./pages/member/MemberLoginPage";
 import MemberHomePage from "./pages/member/MemberHomePage";
+import MemberLeaveFeedback from "./pages/member/MemberLeaveFeedback";
 
 function App() {
   return (
@@ -29,6 +30,10 @@ function App() {
             <Route path="/member/join" element={<MemberJoinPage />} />
             <Route path="/member/login" element={<MemberLoginPage />} />
             <Route path="/member/home" element={<MemberHomePage />} />
+            <Route
+              path="/member/leave-feedback"
+              element={<MemberLeaveFeedback />}
+            />
             {/* Redirects and other routes can be added here */}
           </Routes>
         </div>
