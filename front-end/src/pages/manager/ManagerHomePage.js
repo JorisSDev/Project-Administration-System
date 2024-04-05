@@ -6,6 +6,15 @@ const ManagerHomePage = () => {
 
   const [email, setEmail] = useState("");
 
+  const handleLogout = () => {
+    fetch("/api/logout", {
+      method: "POST",
+    }).then(() => {
+      navigate("/home");
+      return;
+    });
+  };
+
   useEffect(() => {
     fetch("/api/me", {
       method: "GET",
@@ -24,6 +33,9 @@ const ManagerHomePage = () => {
     <div>
       <h2>Manager home</h2>
       <div>You are logged in as: {email}</div>
+      <div>
+        <button onClick={handleLogout}>Logout</button>
+      </div>
       <div>
         <button onClick={() => navigate("/manager/create-group")}>
           Create group

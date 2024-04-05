@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import QRCode from "react-qr-code";
 
-const ManagerHomePage = () => {
+const ManagerCreateGroupPage = () => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -64,8 +64,9 @@ const ManagerHomePage = () => {
           <li>{member}</li>
         ))}
       </ul>
+      <button onClick={() => navigate("/manager/home")}>Done</button>
     </div>
   );
 };
 
-export default ManagerHomePage;
+export default ManagerCreateGroupPage;

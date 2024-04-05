@@ -5,6 +5,15 @@ const MemberHomePage = () => {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
 
+  const handleLogout = () => {
+    fetch("/api/logout", {
+      method: "POST",
+    }).then(() => {
+      navigate("/home");
+      return;
+    });
+  };
+
   useEffect(() => {
     fetch("/api/me", {
       method: "GET",
@@ -23,6 +32,14 @@ const MemberHomePage = () => {
     <div>
       <h2>Member home</h2>
       <div>You are logged in as: {nickname}</div>
+      <div>
+        <button onClick={handleLogout}>Logout</button>
+      </div>
+      <div>
+        <button onClick={() => navigate("/member/leave-feedback")}>
+          Leave feedback
+        </button>
+      </div>
     </div>
   );
 };
