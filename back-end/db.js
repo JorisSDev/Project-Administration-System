@@ -53,6 +53,20 @@ module.exports.saveUser = (userDetails, cb) => {
   });
 };
 
+module.exports.updateUser = (userDetails, cb) => {
+  fs.readFile(USERS_DATA_FILE_PATH, "utf8", (err, data) => {
+    if (err) {
+      return cb(err);
+    }
+    const users = JSON.parse(data);
+    const user = userDetails.email
+      ? users.find((user) => user.email === userDetails.email)
+      : users.find((user) => user.nickname === userDetails.nickname);
+    user.token = userDetails.token;
+    fs.writeFile(USERS_DATA_FILE_PATH, JSON.stringify(users), "utf8", cb);
+  });
+};
+
 module.exports.findGroupByToken = (token, cb) => {
   fs.readFile(GROUPS_DATA_FILE_PATH, "utf8", (err, data) => {
     if (err) {

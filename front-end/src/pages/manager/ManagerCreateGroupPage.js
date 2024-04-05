@@ -64,6 +64,7 @@ const ManagerHomePage = () => {
           <li>{member}</li>
         ))}
       </ul>
+      <button onClick={() => navigate("/manager/home")}>Done</button>
     </div>
   );
 };

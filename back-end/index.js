@@ -61,6 +61,61 @@ app.post("/register", (req, res) => {
     });
 });
 
+const loginValidationSchema = yup.object().shape({
+  email: yup.string(),
+  nickname: yup.string(),
+  password: yup.string().required(),
+});
+
+app.post("/login", (req, res) => {
+  loginValidationSchema
+    .validate(req.body)
+    .then(() => {
+      const { email, nickname, password } = req.body;
+      const cb = (_error, existingUser) => {
+        if (!existingUser) {
+          return res.status(401).json({ message: "Invalid credentials" });
+        }
+        if (existingUser.password !== password) {
+          return res.status(401).json({ message: "Invalid credentials" });
+        }
+        const token = uuidv4();
+        existingUser.token = token;
+        db.updateUser(existingUser, () => {
+          res
+            .status(201)
+            .cookie("token", token, {
+              httpOnly: true,
+              SameSite: "None",
+              secure: true,
+            })
+            .json({ message: "Login successful" });
+        });
+      };
+      if (email) {
+        db.findUserByEmail(email, cb);
+      } else {
+        db.findUserByNickname(nickname, cb);
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(400).json({ message: error.message });
+    });
+});
+
+app.post("/logout", (req, res) => {
+  res
+    .status(200)
+    .cookie("token", "", {
+      httpOnly: true,
+      SameSite: "None",
+      secure: true,
+      expires: new Date(0),
+    })
+    .end();
+});
+
 app.get("/me", (req, res) => {
   db.findUserByToken(req.cookies.token, (_error, existingUser) => {
     if (!existingUser) {
