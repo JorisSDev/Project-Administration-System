@@ -1,12 +1,12 @@
 {
-  "name": "whisper-be",
+  "name": "pas-be",
   "version": "1.0.0",
-  "description": "Whisper WEB system back-end",
+  "description": "back-end for Password Administration System",
   "scripts": {
     "test": "npm test",
     "start": "nodemon index"
   },
-  "author": "Mykolas",
+  "author": "JorisS",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.2",

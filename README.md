@@ -1,6 +1,6 @@
-# Whisper WEB system
+# PAS - Project admin system
 
-Dedicated to read and write confidential feedback.
+Dedicated to manage projects
 
 ## Development environment
 

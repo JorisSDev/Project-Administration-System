@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const ManagerHomePage = () => {
+const HomePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,25 +21,25 @@ const ManagerHomePage = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Home</h2>
-      <div>
-        <button onClick={() => navigate("/manager/register")}>
-          Register as manager
+    <div className="container mt-5">
+      <h2 className="text-center mb-4">Welcome to PAS - Project Administration System</h2>
+      <p className="text-center mb-5">Select an option to get started managing your projects efficiently.</p>
+      <div className="d-grid gap-2 col-6 mx-auto">
+        <button
+          className="btn btn-primary mb-2"
+          onClick={() => navigate("/user/register")}
+        >
+          Register as Manager
         </button>
-      </div>
-      <div>
-        <button onClick={() => navigate("/manager/login")}>
-          Login as manager
-        </button>
-      </div>
-      <div>
-        <button onClick={() => navigate("/member/login")}>
-          Login as member
+        <button
+          className="btn btn-secondary mb-2"
+          onClick={() => navigate("/user/login")}
+        >
+          Login as Manager
         </button>
       </div>
     </div>
   );
 };
 
-export default ManagerHomePage;
+export default HomePage;

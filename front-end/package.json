@@ -1,19 +1,19 @@
 {
-  "name": "whisper-fe",
+  "name": "pas-fe",
   "version": "1.0.0",
-  "description": "Whisper WEB system front-end",
+  "description": "Front-end for Password Administration System",
   "scripts": {
     "test": "npm test",
     "start": "webpack serve --open"
   },
   "keywords": [
-    "whisper",
+    "pas",
     "web",
     "system",
     "front-end",
     "fe"
   ],
-  "author": "Mykolas",
+  "author": "Joriss",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.24.3",
@@ -26,6 +26,7 @@
     "webpack-dev-server": "^5.0.4"
   },
   "dependencies": {
+    "bootstrap": "^5.3.3",
     "md5": "^2.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

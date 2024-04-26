@@ -2,6 +2,7 @@ const fs = require("fs");
 
 const USERS_DATA_FILE_PATH = "data/users.json";
 const GROUPS_DATA_FILE_PATH = "data/groups.json";
+const PROJECTS_DATA_FILE_PATH = "data/projects.json";
 
 module.exports.findUserByEmail = (email, cb) => {
   fs.readFile(USERS_DATA_FILE_PATH, "utf8", (err, data) => {
@@ -25,19 +26,6 @@ module.exports.findUserByToken = (token, cb) => {
     cb(
       null,
       users.find((user) => user.token === token)
-    );
-  });
-};
-
-module.exports.findUserByNickname = (nickname, cb) => {
-  fs.readFile(USERS_DATA_FILE_PATH, "utf8", (err, data) => {
-    if (err) {
-      return cb(err);
-    }
-    const users = JSON.parse(data);
-    cb(
-      null,
-      users.find((user) => user.nickname === nickname)
     );
   });
 };
@@ -67,38 +55,43 @@ module.exports.updateUser = (userDetails, cb) => {
   });
 };
 
-module.exports.findGroupByToken = (token, cb) => {
-  fs.readFile(GROUPS_DATA_FILE_PATH, "utf8", (err, data) => {
+module.exports.findUsersEmailList = (cb) => {
+  fs.readFile(USERS_DATA_FILE_PATH, "utf8", (err, data) => {
     if (err) {
       return cb(err);
     }
-    const groups = JSON.parse(data);
-    cb(
-      null,
-      groups.find((group) => group.token === token)
-    );
+    const users = JSON.parse(data);
+    cb(null, users.map((user) => user.email));
+  });
+}
+
+module.exports.findProjectsList = (cb) => {
+  fs.readFile(PROJECTS_DATA_FILE_PATH, "utf8", (err, data) => {
+    if (err) {
+      return cb(err);
+    }
+    cb(null, JSON.parse(data));
+  });
+};
+module.exports.saveProject = (projectDetails, cb) => {
+  fs.readFile(PROJECTS_DATA_FILE_PATH, "utf8", (err, data) => {
+    if (err) {
+      return cb(err);
+    }
+    const projects = JSON.parse(data);
+    const newProject = {
+      projectId: projects.length + 1,
+      projectName: projectDetails.projectName,
+      projectDescription: projectDetails.projectDescription,
+      projectManager: projectDetails.projectManager,
+    };
+
+    projects.push(newProject);
+    fs.writeFile(PROJECTS_DATA_FILE_PATH, JSON.stringify(projects), "utf8", cb);
   });
 };
 
-module.exports.saveGroup = (groupDetails, cb) => {
-  fs.readFile(GROUPS_DATA_FILE_PATH, "utf8", (err, data) => {
-    if (err) {
-      return cb(err);
-    }
-    const groups = JSON.parse(data);
-    groups.push(groupDetails);
-    fs.writeFile(GROUPS_DATA_FILE_PATH, JSON.stringify(groups), "utf8", cb);
-  });
+module.exports.saveProjectsList = (projects, cb) => {
+  fs.writeFile(PROJECTS_DATA_FILE_PATH, JSON.stringify(projects), "utf8", cb);
 };
 
-module.exports.updateGroup = (groupDetails, cb) => {
-  fs.readFile(GROUPS_DATA_FILE_PATH, "utf8", (err, data) => {
-    if (err) {
-      return cb(err);
-    }
-    const groups = JSON.parse(data);
-    const group = groups.find((group) => group.token === groupDetails.token);
-    group.members = groupDetails.members;
-    fs.writeFile(GROUPS_DATA_FILE_PATH, JSON.stringify(groups), "utf8", cb);
-  });
-};

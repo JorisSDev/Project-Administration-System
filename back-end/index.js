@@ -128,92 +128,117 @@ app.get("/me", (req, res) => {
   });
 });
 
-app.post("/create-group", (req, res) => {
-  db.findUserByToken(req.cookies.token, (_error, existingUser) => {
-    if (!existingUser.email) {
-      res.status(401).send();
-      return;
+app.get("/users", (req, res) => {
+  db.findUsersEmailList((error, users) => {
+    if (error) {
+      console.error("Database error:", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
-    if (!existingUser) {
-      res.status(401).send();
-      return;
+    res.status(200).json(users);
+  });
+});
+
+
+app.get("/projects", (req, res) => {
+  db.findProjectsList((_error, projects) => {
+    res.status(200).json(projects);
+  });
+});
+
+app.get("/manager/projects/:email", (req, res) => {
+  const email = req.params.email;
+  db.findProjectsList((_error, projects) => {
+    const myProjects = projects.filter((project) => project.projectManager === email);
+    res.status(200).json(myProjects);
+  });
+});
+
+app.post("/project", (req, res) => {
+  const { projectName, projectDescription, projectManager } = req.body;
+  db.saveProject({
+      projectName,
+      projectDescription,
+      projectManager,
+    },
+    (error) => {
+      if (!error) {
+        res.status(200).json({ message: "Project created successfully" });
+      } else {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+      }
     }
-    const email = existingUser.email;
-    const token = uuidv4();
-    db.saveGroup({ email, token, members: [] }, () => {
-      res.status(200).json({ email, token });
+  );
+});
+
+app.delete("/project/:projectId", (req, res) => {
+  const projectId = req.params.projectId;
+  db.findProjectsList((_error, projects) => {
+    const updatedProjects = projects.filter((project) => project.projectId !== Number(projectId));
+    db.saveProjectsList(updatedProjects, (error) => {
+      if (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+      }
+      res.status(200).json({ message: "Project deleted successfully" });
     });
   });
 });
 
-app.get("/group", (req, res) => {
-  db.findGroupByToken(req.get("Token"), (_error, existingGroup) => {
-    if (!existingGroup) {
-      res.status(401).send();
+app.get("/project/:projectId", (req, res) => {
+  const projectId = req.params.projectId;
+  db.findProjectsList((_error, projects) => {
+    const project = projects.find((project) => project.projectId === Number(projectId));
+    if (!project) {
+      res.status(404).json({ message: "Project not found" });
       return;
     }
-    res
-      .status(200)
-      .json({ email: existingGroup.email, members: existingGroup.members });
+    res.status(200).json(project);
   });
 });
 
-const joinValidationSchema = yup.object().shape({
-  nickname: yup.string().min(3).max(50).required(),
-  password: yup.string().required(),
-  encPrivateKey: yup.string().required(),
-  publicKey: yup.string().required(),
-});
+app.post("/project/:projectId/assign", (req, res) => {
+  const projectId = req.params.projectId;
+  const { userEmail } = req.body;
 
-app.post("/join", (req, res) => {
-  db.findGroupByToken(req.get("Token"), (_error, existingGroup) => {
-    if (!existingGroup) {
-      res.status(401).send();
+  db.findProjectsList((_error, projects) => {
+    const project = projects.find((project) => project.projectId === Number(projectId));
+    if (!project) {
+      res.status(404).json({ message: "Project not found" });
       return;
     }
-
-    const { nickname, password, encPrivateKey, publicKey } = req.body;
-
-    joinValidationSchema
-      .validate(req.body)
-      .then(() => {
-        db.findUserByNickname(nickname, (_error, existingUser) => {
-          if (existingUser) {
-            return res.status(400).json({ message: "Nickname already exists" });
-          }
-
-          const token = uuidv4();
-
-          db.saveUser(
-            {
-              nickname,
-              password,
-              token,
-              encPrivateKey,
-              publicKey,
-            },
-            () => {
-              existingGroup.members.push(nickname);
-              db.updateGroup(existingGroup, () => {
-                res
-                  .status(201)
-                  .cookie("token", token, {
-                    httpOnly: true,
-                    SameSite: "None",
-                    secure: true,
-                  })
-                  .json({ message: "User registered successfully" });
-              });
-            }
-          );
-        });
-      })
-      .catch((error) => {
+    project.members = project.members || [];
+    project.members.push(userEmail);
+    db.saveProjectsList(projects, (error) => {
+      if (error) {
         console.error(error);
-        res.status(400).json({ message: error.message });
+        res.status(500).json({ message: error.message });
+      }
+      res.status(200).json({ message: "User assigned successfully" });
+    });
+  })});
+
+  app.delete("/project/:projectId/member/:email", (req, res) => {
+    const projectId = req.params.projectId;
+    const email = req.params.email;
+  
+    db.findProjectsList((_error, projects) => {
+      const project = projects.find((project) => project.projectId === Number(projectId));
+      if (!project) {
+        res.status(404).json({ message: "Project not found" });
+        return;
+      }
+      project.members = project.members.filter((member) => member !== email);
+      db.saveProjectsList(projects, (error) => {
+        if (error) {
+          console.error(error);
+          res.status(500).json({ message: error.message });
+        }
+        res.status(200).json({ message: "User removed successfully" });
       });
+    });
   });
-});
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
