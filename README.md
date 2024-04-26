@@ -1,6 +1,6 @@
 # PAS - Project admin system
 
-Dedicated to manage projects
+Designed to manage projects (jira type web app)
 
 ## Development environment
 
